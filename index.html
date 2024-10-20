@@ -9,10 +9,39 @@
   <meta name="author" content="YA">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="dist/style.css">
+  <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body>
   <div id="map"></div>
+  <div class="map-overlay top">
+    <!-- Style switcher control -->
+    <div id="switcher-control" class="map-overlay-inner">
+      <h2>Style</h2>
+      <select id="style-switch"></select>
+    </div>
+    <!-- Nowcast control -->
+
+    <!-- Nowcast control -->
+    <div id="nowcast-control" class="map-overlay-inner">
+      <h2>Nowcast</h2>
+      <label id="nowcast-datetime"></label>
+      <input id="nowcast-slider" type="range" min="0" max="25" step="1" value="0" />
+    </div>
+    <!-- Nowcast control -->
+
+    <!-- Local GeoJSON-->
+    <div id="local-geojson-control" class="map-overlay-inner">
+      <h2>Local GeoJSON</h2>
+      <div id="geojson" class="geojson">
+        <input type="file" id="file" name="file" accept="application/geo+json,application/vnd.geo+json,.geojson" />
+      </div>
+    </div>
+    <!-- Local GeoJSON-->
+  </div>
+
+  <script src="js/nowcast.js"></script>
+  <script src="js/style-switcher.js"></script>
 
   <script type="module" src="dist/bundle.js"></script>
 </body>
