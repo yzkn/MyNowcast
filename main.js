@@ -321,6 +321,238 @@ const initMap = (s) => {
   });
 }
 
+
+const initMapAll = (s) => {
+  const map = new maplibregl.Map({
+    container: 'map', // container id
+    hash: true,
+    // style: './style/pale.json', // style URL
+    style: s,
+    center: [139.767125, 35.681236], // starting position [lng, lat]
+    zoom: 10, // starting zoom
+    minZoom: 4,
+    maxZoom: 10,
+    localIdeographFontFamily: false
+  });
+
+  map.addControl(
+    new NavigationControl({
+      visualizePitch: true,
+      showZoom: true,
+      showCompass: true
+    }),
+    'bottom-right'
+  );
+
+  map.addControl(
+    new ScaleControl()
+  );
+
+  // https://github.com/watergis/maplibre-gl-export
+  const exportControl = new MaplibreExportControl({
+    PageSize: Size.A3,
+    PageOrientation: PageOrientation.Portrait,
+    Format: Format.PNG,
+    DPI: DPI[96],
+    Crosshair: true,
+    PrintableArea: true,
+    Local: 'ja',
+
+  });
+  map.addControl(exportControl, 'bottom-right');
+
+  // https://github.com/maplibre/maplibre-gl-geocoder
+  map.addControl(
+    new MaplibreGeocoder({
+      forwardGeocode: async (config) => {
+        const term = config.query;
+        const response = await fetch(
+          `https://msearch.gsi.go.jp/address-search/AddressSearch?q=${encodeURIComponent(term)}`
+        );
+        if (!response.ok) {
+          return {};
+        }
+        const resultJson = await response.json();
+        const features = resultJson.map(({ geometry: { coordinates: center }, properties }) => ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: center,
+          },
+          place_name: properties.title,
+          center
+        }));
+
+        return {
+          features,
+        };
+      },
+    }, {
+      maplibregl: maplibregl,
+      marker: false,
+      showResultsWhileTyping: true,
+      placeholder: '地名検索',
+      reverseGeocode: true,
+    }),
+    'top-right',
+  );
+
+  // Style switcher
+  map.addControl(new StyleSwitcherControl());
+  // Style switcher
+
+  // Nowcast control
+  map.addControl(new NowcastControl(), 'top-right');
+  // Nowcast control
+
+
+
+  map.on('load', () => {
+    // Add vector tiles
+    map.addSource('All', {
+      'type': 'vector',
+      'tiles': [
+        'https://yzkn.github.io/MyKMLsMap/tiles/{z}/{x}/{y}.pbf'
+      ],
+      'minzoom': 4,
+      'maxzoom': 10
+    });
+    map.addLayer(
+      {
+        'id': 'All',
+        'type': 'line',
+        'source': 'All',
+        'source-layer': 'All',
+        'layout': {
+          'line-cap': 'round',
+          'line-join': 'round'
+        },
+        'paint': {
+          'line-opacity': 0.8,
+          'line-color': 'rgb(255, 0, 0)',
+          'line-width': 1
+        }
+      }
+    );
+    // Add vector tiles
+
+
+    // Add Nowcast tiles
+    const NOWCAST_URL = 'https://www.jma.go.jp/bosai/jmatile/data/nowc/targetTimes_N2.json';
+    const RASRF_URL = 'https://www.jma.go.jp/bosai/jmatile/data/rasrf/targetTimes.json';
+    let nowcastSources = [];
+
+    fetch(NOWCAST_URL)
+      .then(function (data) {
+        return data.json();
+      })
+      .then(function (json) {
+        // 最小値を取得にはjson[0].validtime
+        json.sort(function (a, b) {
+          return a.validtime - b.validtime;
+        });
+
+        let isFirst = true;
+        json.forEach(element => {
+          const basetime = element.basetime;
+          const validtime = element.validtime;
+          const sourceId = `Nowcast${basetime}${validtime}`;
+
+          nowcastSources.push({ id: sourceId, validtime: validtime });
+          map.addSource(sourceId, {
+            'type': 'raster',
+            'tiles': [
+              `https://www.jma.go.jp/bosai/jmatile/data/nowc/${element.basetime}/none/${element.validtime}/surf/hrpns/{z}/{x}/{y}.png`
+            ],
+            'minzoom': 4,
+            'maxzoom': 10
+          });
+          map.addLayer(
+            {
+              'id': sourceId,
+              'type': 'raster',
+              'source': sourceId,
+              'source-layer': sourceId
+            }
+          );
+          map.setLayoutProperty(sourceId, 'visibility', isFirst ? 'visible' : 'none');
+          map.setPaintProperty(sourceId, "raster-opacity", 0.2);
+          isFirst = false;
+        });
+
+        const lastValidTime = nowcastSources[nowcastSources.length - 1]['validtime'];
+
+        fetch(RASRF_URL)
+          .then(function (data) {
+            return data.json();
+          })
+          .then(function (json) {
+            // 最小値を取得にはjson[0].validtime
+            json.sort(function (a, b) {
+              return a.validtime - b.validtime;
+            });
+
+            json
+              .filter(element => element.validtime > lastValidTime)
+              .forEach(element => {
+                const basetime = element.basetime;
+                const validtime = element.validtime;
+                const sourceId = `Rasrf${basetime}${validtime}`;
+
+                nowcastSources.push({ id: sourceId, validtime: validtime });
+                map.addSource(sourceId, {
+                  'type': 'raster',
+                  'tiles': [
+                    `https://www.jma.go.jp/bosai/jmatile/data/rasrf/${element.basetime}/${element.member}/${element.validtime}/surf/rasrf/{z}/{x}/{y}.png`
+                  ],
+                  'minzoom': 4,
+                  'maxzoom': 10
+                });
+                map.addLayer(
+                  {
+                    'id': sourceId,
+                    'type': 'raster',
+                    'source': sourceId,
+                    'source-layer': sourceId
+                  }
+                );
+                map.setLayoutProperty(sourceId, 'visibility', 'none');
+                map.setPaintProperty(sourceId, "raster-opacity", 0.1);
+              });
+
+            // Nowcast control
+            console.log('nowcastSources', nowcastSources);
+            document.getElementById('nowcast-slider').max = nowcastSources.length - 1;
+
+            document.getElementById('nowcast-slider').addEventListener('change', () => {
+              document.getElementById('nowcast-datetime').innerHTML =
+                (nowcastSources[document.getElementById('nowcast-slider').value]['id'].startsWith('Nowcast') ? '<font color="#4caf50">' : '<font color="#3f51b5">') +
+                formatDate(parseDateString(nowcastSources[document.getElementById('nowcast-slider').value]['validtime']), 'MM/dd HH:mm') +
+                'まで'
+              '</font>';
+
+              let isPast = true;
+              nowcastSources.forEach(item => {
+                map.setLayoutProperty(item['id'], 'visibility', isPast ? 'visible' : 'none');
+                if (item['id'] == nowcastSources[document.getElementById('nowcast-slider').value]['id']) {
+                  console.log(item['id'], nowcastSources[document.getElementById('nowcast-slider').value]['id'])
+                  isPast = false;
+                }
+              });
+              map.setLayoutProperty(nowcastSources[document.getElementById('nowcast-slider').value]['id'], 'visibility', 'visible');
+            }, false);
+            document.getElementById('nowcast-datetime').innerHTML =
+              '<font color="#4caf50">' +
+              formatDate(parseDateString(nowcastSources[0]['validtime']), 'MM/dd HH:mm') +
+              '</font>';
+            map.setLayoutProperty(nowcastSources[0]['id'], 'visibility', 'visible');
+            // Nowcast control
+          });
+      });
+    // Add Nowcast tiles
+  });
+}
+
 window.addEventListener('DOMContentLoaded', (event) => {
   const searchParams = new URLSearchParams(window.location.search);
 
@@ -348,8 +580,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
     alert('Your browser does not support MapLibre GL');
   } else {
     const selectedStyle = document.getElementById('style-switch').value;
-    initMap(
-      styles.find((v) => v.style === selectedStyle)['uri']
-    );
+    if (location.pathname.includes('all')) {
+      initMapAll(
+        styles.find((v) => v.style === selectedStyle)['uri']
+      );
+    } else {
+      initMap(
+        styles.find((v) => v.style === selectedStyle)['uri']
+      );
+    }
   }
 });
