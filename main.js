@@ -476,7 +476,7 @@ const initMapAll = (s) => {
             }
           );
           map.setLayoutProperty(sourceId, 'visibility', isFirst ? 'visible' : 'none');
-          map.setPaintProperty(sourceId, "raster-opacity", 0.2);
+          map.setPaintProperty(sourceId, "raster-opacity", 0.4);
           isFirst = false;
         });
 
@@ -517,7 +517,7 @@ const initMapAll = (s) => {
                   }
                 );
                 map.setLayoutProperty(sourceId, 'visibility', 'none');
-                map.setPaintProperty(sourceId, "raster-opacity", 0.1);
+                map.setPaintProperty(sourceId, "raster-opacity", 0.2);
               });
 
             // Nowcast control
@@ -539,7 +539,6 @@ const initMapAll = (s) => {
                   isPast = false;
                 }
               });
-              map.setLayoutProperty(nowcastSources[document.getElementById('nowcast-slider').value]['id'], 'visibility', 'visible');
             }, false);
             document.getElementById('nowcast-datetime').innerHTML =
               '<font color="#4caf50">' +
@@ -580,7 +579,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     alert('Your browser does not support MapLibre GL');
   } else {
     const selectedStyle = document.getElementById('style-switch').value;
-    if (location.pathname.includes('all')) {
+    if (location.search.includes('all')) {
       initMapAll(
         styles.find((v) => v.style === selectedStyle)['uri']
       );

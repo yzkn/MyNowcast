@@ -25561,7 +25561,7 @@ function(x) {
 */
 function(x) {
   function d() {
-    return (_i.canvg ? Promise.resolve(_i.canvg) : import("./index.es-DoMiftKY-DCTHeYrH.js")).catch(function(p) {
+    return (_i.canvg ? Promise.resolve(_i.canvg) : import("./index.es-DoMiftKY-DBwMGBNJ.js")).catch(function(p) {
       return Promise.reject(new Error("Could not load canvg: " + p));
     }).then(function(p) {
       return p.default ? p.default : p;
@@ -28487,7 +28487,7 @@ const td = [
             source: V,
             "source-layer": V
           }
-        ), d.setLayoutProperty(V, "visibility", c ? "visible" : "none"), d.setPaintProperty(V, "raster-opacity", 0.2), c = !1;
+        ), d.setLayoutProperty(V, "visibility", c ? "visible" : "none"), d.setPaintProperty(V, "raster-opacity", 0.4), c = !1;
       });
       const C = w[w.length - 1].validtime;
       fetch(S).then(function(N) {
@@ -28511,13 +28511,13 @@ const td = [
               source: F,
               "source-layer": F
             }
-          ), d.setLayoutProperty(F, "visibility", "none"), d.setPaintProperty(F, "raster-opacity", 0.1);
+          ), d.setLayoutProperty(F, "visibility", "none"), d.setPaintProperty(F, "raster-opacity", 0.2);
         }), console.log("nowcastSources", w), document.getElementById("nowcast-slider").max = w.length - 1, document.getElementById("nowcast-slider").addEventListener("change", () => {
           document.getElementById("nowcast-datetime").innerHTML = (w[document.getElementById("nowcast-slider").value].id.startsWith("Nowcast") ? '<font color="#4caf50">' : '<font color="#3f51b5">') + tu(eu(w[document.getElementById("nowcast-slider").value].validtime), "MM/dd HH:mm") + "まで";
           let q = !0;
           w.forEach((j) => {
             d.setLayoutProperty(j.id, "visibility", q ? "visible" : "none"), j.id == w[document.getElementById("nowcast-slider").value].id && (console.log(j.id, w[document.getElementById("nowcast-slider").value].id), q = !1);
-          }), d.setLayoutProperty(w[document.getElementById("nowcast-slider").value].id, "visibility", "visible");
+          });
         }, !1), document.getElementById("nowcast-datetime").innerHTML = '<font color="#4caf50">' + tu(eu(w[0].validtime), "MM/dd HH:mm") + "</font>", d.setLayoutProperty(w[0].id, "visibility", "visible");
       });
     });
@@ -28535,7 +28535,7 @@ window.addEventListener("DOMContentLoaded", (x) => {
     alert("Your browser does not support MapLibre GL");
   else {
     const v = document.getElementById("style-switch").value;
-    location.pathname.includes("all") ? G1(
+    location.search.includes("all") ? G1(
       td.find((S) => S.style === v).uri
     ) : Z1(
       td.find((S) => S.style === v).uri
