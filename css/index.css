@@ -59,17 +59,6 @@ body,
 
 /* Nowcast control */
 
-/* Local GeoJSON control */
-#local-geojson-control {
-    display: none;
-}
-
-#local-geojson-button-icon {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABCUlEQVRIS9VV0RFEMBB96YAO6IAKtEAJOtABKtCCDlAJJeiADu5uzcQkQe7kxNzt18q8zfPeZnbZ4xWwGOxWgnmeUZYl6roG5bpwHAdBECCKIhRFcQiVFBCQCEyiaRrEcbwplQh838c4jjgC82rG2JISruu6RTH/VkkkAl74ru8qjisn2/q+h+d5q5JLCOi2JEnQti3yPJd68hXBXq9IxTRNnyngVnA0t049F4kuITh6ZXs9NLLofwh0Xosq1N6Iz1xrkXWCsyPj95ps3SLrBJf3wHXdZdHQRKRlciaGYUAYhtCOijRN19l+5nIRm2UZqqraH3Z0akpCf07Lhi6nfF1Oty59U1t0dU/aCwrIExf24QAAAABJRU5ErkJggg==');
-}
-
-/* Local GeoJSON control */
-
 /* Style switcher control */
 #switcher-button-icon {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABdUlEQVRIS82VYZGDMBCFtw6QgAQktA5AAaCAogBQACgAFFAHVEIlVAIO7u7LTDoBWshwx8ztH2iT7Nt9b184ff2EHBinfwNwv98lTVNxHEfCMJQoiqz63uyAxHVdy+12myQ8n8/SNI24rrsK9BFgHEcpikLathXeP8X1epUkST4CLQBsE88BASrLclHHC4DEVEvVaxWv8YE+gJj6vACCIFjwbKXim03oMwyDWjkEwPd96ft+CsCvqqrUxDyfz13FQ1GWZYoi3icdmBkBYuZtg2QkJblOrM9OpijPczVubEZoQBB+LeAbYT3PEzzTdZ3yxwKAxcvlov43TfR4PBQQ62awh4p5zs0I/+iwoGhOjWkiOkEfOsNYehRNM1prQMWA6ZibaG7GXRpADRVrDbSJeFKAnrQ/0SCOYwFwroEprnkh/koDQLiuoe0dVVY+OEwDk4I9Grzzy+YHB6AtDdaMuAmgD2sfmBrYXCXWADbJdlG0N7E+9w2l1XnIbffIdAAAAABJRU5ErkJggg==');
